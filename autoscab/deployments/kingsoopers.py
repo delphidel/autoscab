@@ -3,22 +3,22 @@ import random
 import datetime
 import pdb
 from autoscab.deployments.deployment import Deployment
-from autoscab.constants.locators import FredMeyerLocator
+from autoscab.constants.locators import KingSoopersLocator
 from autoscab.constants.common import NOS, NAS
 from autoscab.postbot import PostBot
 from autoscab.constants.location import load_cities
 from pprint import pformat
 
 
-class FredMeyerPostbot(PostBot):
+class KingSoopersPostbot(PostBot):
 
     def __postinit__(self):
         # get some random location info
         cities = load_cities()
-        oregon = cities[cities['state_id'] == 'OR']
-        row = oregon.sample(1)
+        colorado = cities[cities['state_id'] == 'CO']
+        row = colorado.sample(1)
         self.identity.city = row.city.values[0]
-        self.identity.state = 'Oregon'
+        self.identity.state = 'Colorado'
         self.identity.zip = random.choice(row.zips.values.tolist()[0].split(' '))
         self.logger.info(f'Applying for job with identity:\n{pformat(self.identity.__dict__)}')
 
@@ -127,8 +127,9 @@ class FredMeyerPostbot(PostBot):
             "app_nocrime",
             "app_emergency_other",
             "app_sig_acknowledge",
+            "app_am15",
+            "app_am16",
             "app_am18",
-            "app_am19",
             "app_am21",
             "app_legaltowork",
             "app_bgcheck",
@@ -167,9 +168,9 @@ class FredMeyerPostbot(PostBot):
 
 
 
-FredMeyerDeployment = Deployment(
-    name="fredmeyer",
-    urls=['https://kroger.eightfold.ai/careers?query=1976116&domain=kroger.com&location_distance_km=100&messenger=email'],
-    locators=dict(FredMeyerLocator.__dict__),
-    postbot=FredMeyerPostbot
+KingSoopersDeployment = Deployment(
+    name="kingsoopers",
+    urls=['https://kroger.eightfold.ai/careers?query=king+soopers&domain=kroger.com&location_distance_km=100&messenger=email'],
+    locators=dict(KingSoopersLocator.__dict__),
+    postbot=KingSoopersPostbot
 )
