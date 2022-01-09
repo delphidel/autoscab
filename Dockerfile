@@ -10,4 +10,4 @@ RUN sudo apt-get install -y python3-pip
 WORKDIR /home/seluser/autoscab
 RUN pip install .
 
-CMD autoscab kingsoopers --relentless
+CMD while true ; do autoscab kingsoopers -n 5 ; done
