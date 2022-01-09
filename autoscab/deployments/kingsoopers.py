@@ -2,6 +2,8 @@ import time
 import random
 import datetime
 import pdb
+import requests as req
+import json
 from autoscab.deployments.deployment import Deployment
 from autoscab.constants.locators import KingSoopersLocator
 from autoscab.constants.common import NOS, NAS
@@ -134,9 +136,12 @@ class KingSoopersPostbot(PostBot):
             "app_legaltowork",
             "app_bgcheck",
             "app_workovernight"]:
-            button = getattr(self, anattr)
-            button.click()
-            self.random_sleep(0, 0.5)
+            try:
+                button = getattr(self, anattr)
+                button.click()
+                self.random_sleep(0, 0.5)
+            except:
+                self.logger.warn("An error occurred pressing button {}".format(anattr))
 
         # give a random day int he future as a start date
         futuredate = datetime.date.today() + datetime.timedelta(days=random.randint(1,14))
@@ -166,11 +171,39 @@ class KingSoopersPostbot(PostBot):
         self.random_sleep(10,15)
         self.logger.success("Completed Application!")
 
+def get_deployment_urls():
+    # get every available position ID from the search for 'king soopers', wrap in a query URL
+    ids = []
 
+    queryFmt = 'https://kroger.eightfold.ai/api/apply/v2/jobs?domain=kroger.com&search=king%20soopers&location=colorado&start={}'
+
+    print("Polling for ids...")
+    start = 0
+    r = req.get(queryFmt.format(start))
+    positions = json.loads(r.text)['positions']
+    for pos in positions:
+        ids.append(pos['id'])
+
+    while len(positions) != 0:
+        start = start + 10
+        r = req.get(queryFmt.format(start))
+        positions = json.loads(r.text)['positions']
+        for pos in positions:
+            ids.append(pos['id'])
+
+    print("Got {} ids! Making urls...".format(len(ids)))
+
+    urls = []
+    urlFmt = 'https://kroger.eightfold.ai/careers?pid={}&query=king%20soopers&domain=kroger.com&triggerGoButton=true&triggerGoButton=false'
+    for this_id in ids:
+        urls.append(urlFmt.format(this_id))
+    return urls
 
 KingSoopersDeployment = Deployment(
     name="kingsoopers",
-    urls=['https://kroger.eightfold.ai/careers?query=king+soopers&domain=kroger.com&location_distance_km=100&messenger=email'],
+    urls=get_deployment_urls(),
+#    urls=['https://kroger.eightfold.ai/careers?pid=10302982&location=colorado&query=king%20soopers%20temporary&domain=kroger.com&triggerGoButton=false'],
+#    urls = ['https://kroger.eightfold.ai/careers?query=king+soopers&domain=kroger.com&location_distance_km=100&messenger=email'],
     locators=dict(KingSoopersLocator.__dict__),
     postbot=KingSoopersPostbot
 )

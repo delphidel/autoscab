@@ -29,6 +29,7 @@ class Deployment:
         passing **kwargs onto the PostBot
         """
         url = random.choice(self.urls)
+        print("Using position url: {}".format(url))
         return self.postbot(url=url, locator_dict=self.locators, **kwargs)
 
     def __post_init__(self):
