@@ -39,10 +39,13 @@ def main():
 
     else:
         for i in range(args.n):
-            print(colors.GREEN + '-' * 50 + f'\n    applying for job #{i}/{args.n}\n' + '-' * 50 + colors.RESET)
-            bot = deployment.make(headless=headless)
-            bot.apply()
-            bot.quit(args.leaveopen)
+            try:
+                print(colors.GREEN + '-' * 50 + f'\n    applying for job #{i}/{args.n}\n' + '-' * 50 + colors.RESET)
+                bot = deployment.make(headless=headless)
+                bot.apply()
+                bot.quit(args.leaveopen)
+            except:
+                print(colors.RED + '-' * 50 + f'\n    failed application for #{i}/{args.n}! Trying next\n' + '-' * 50 + colors.RESET)
 
 if __name__ == "__main__":
     main()

@@ -172,29 +172,28 @@ class KingSoopersPostbot(PostBot):
         self.logger.success("Completed Application!")
 
 def get_deployment_urls():
-    # get every available position ID from the search for 'king soopers', wrap in a query URL
+    # get ten random position ID from the search for 'king soopers temporary'; wrap in a query URL
     ids = []
 
-    queryFmt = 'https://kroger.eightfold.ai/api/apply/v2/jobs?domain=kroger.com&search=king%20soopers&location=colorado&start={}'
+    queryFmt = 'https://kroger.eightfold.ai/api/apply/v2/jobs?domain=kroger.com&domain=kroger.com&start={}&num=10&location=colorado&query=temporary'
 
     print("Polling for ids...")
+
+    # first query gets count
     start = 0
     r = req.get(queryFmt.format(start))
+    count = json.loads(r.text)['count']
+
+    # second query gets a random set of ten
+    r = req.get(queryFmt.format(random.randint(0,count-10)))
     positions = json.loads(r.text)['positions']
     for pos in positions:
         ids.append(pos['id'])
 
-    while len(positions) != 0:
-        start = start + 10
-        r = req.get(queryFmt.format(start))
-        positions = json.loads(r.text)['positions']
-        for pos in positions:
-            ids.append(pos['id'])
-
     print("Got {} ids! Making urls...".format(len(ids)))
 
     urls = []
-    urlFmt = 'https://kroger.eightfold.ai/careers?pid={}&query=king%20soopers&domain=kroger.com&triggerGoButton=true&triggerGoButton=false'
+    urlFmt = 'https://kroger.eightfold.ai/careers?pid={}'
     for this_id in ids:
         urls.append(urlFmt.format(this_id))
     return urls
