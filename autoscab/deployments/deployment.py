@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import random
 
 from autoscab.postbot import PostBot
+from autoscab.logger import init_logger
 
 @dataclass
 class Deployment:
@@ -29,7 +30,8 @@ class Deployment:
         passing **kwargs onto the PostBot
         """
         url = random.choice(self.urls)
-        print("Using position url: {}".format(url))
+        logger = init_logger('deployment')
+        logger.info("Using position url: {}".format(url))
         return self.postbot(url=url, locator_dict=self.locators, **kwargs)
 
     def __post_init__(self):

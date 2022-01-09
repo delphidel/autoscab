@@ -10,6 +10,7 @@ from autoscab.constants.common import NOS, NAS
 from autoscab.postbot import PostBot
 from autoscab.constants.location import load_cities
 from pprint import pformat
+from autoscab.logger import init_logger
 
 
 class KingSoopersPostbot(PostBot):
@@ -172,12 +173,15 @@ class KingSoopersPostbot(PostBot):
         self.logger.success("Completed Application!")
 
 def get_deployment_urls():
+
+    logger = init_logger('kingsoopers-postbot')
+
     # get ten random position ID from the search for 'king soopers temporary'; wrap in a query URL
     ids = []
 
     queryFmt = 'https://kroger.eightfold.ai/api/apply/v2/jobs?domain=kroger.com&domain=kroger.com&start={}&num=10&location=colorado&query=temporary'
 
-    print("Polling for ids...")
+    logger.info("Polling for ids...")
 
     # first query gets count
     start = 0
@@ -190,7 +194,7 @@ def get_deployment_urls():
     for pos in positions:
         ids.append(pos['id'])
 
-    print("Got {} ids! Making urls...".format(len(ids)))
+    logger.info("Got {} ids! Making urls...".format(len(ids)))
 
     urls = []
     urlFmt = 'https://kroger.eightfold.ai/careers?pid={}'
