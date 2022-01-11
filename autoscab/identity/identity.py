@@ -57,7 +57,14 @@ class Identity:
                                      data='{"address":"' + fake_email + '","password":" "}',
                                      headers={'Content-Type': 'application/json'}).json().get('token')
         elif service == "random":
-            fake_email = self.faker.free_email()
+            hosts = ["gmail.com", "yahoo.com", "hotmail.com", "asu.edu", "byu.edu", "centurylink.net", "msn.com", "kroger.com", "protonmail.net"]
+            host = random.choice(hosts)
+            # half the time, do a 2-digit year, the other half do 4
+            if (random.randint(1, 2) == 1):
+                num = "{n:02d}".format(n=random.randint(1,99))
+            else:
+                num = "{n:04d}".format(n=random.randint(1900,2005))
+            fake_email = "{}.{}{}@{}".format(self.name[0], self.name[1], num, host)
             mail_sid = ''
         else:
             raise ValueError('Dont know what email service to use! try one of guerilla or mailtm')

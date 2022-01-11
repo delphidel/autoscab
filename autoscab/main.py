@@ -1,8 +1,11 @@
 import argparse
 import pprint
 import sys
+import traceback
+
 from autoscab.deployments import Deployment
 from autoscab.constants import colors
+from autoscab.logger import init_logger
 
 parser = argparse.ArgumentParser("APPLY FOR MANY OF THE SAME JOB", epilog="IF THEY WANT SCABS, WE'LL GIVE EM SCABS")
 
@@ -17,6 +20,7 @@ parser.add_argument('--leaveopen', action="store_true", help="Try to leave the b
 
 def main():
     args = parser.parse_args()
+    logger = init_logger('main')
 
     if args.list:
         pprint.pprint(list(Deployment.get_deployments().keys()))
@@ -44,7 +48,9 @@ def main():
                 bot = deployment.make(headless=headless)
                 bot.apply()
                 bot.quit(args.leaveopen)
-            except:
+            except Exception as e:
+                logger.error('error! {}'.format(e))
+                traceback.print_exc()
                 print(colors.RED + '-' * 50 + f'\n    failed application for #{i+1}/{args.n}! Trying next\n' + '-' * 50 + colors.RESET, flush=True)
 
 if __name__ == "__main__":
