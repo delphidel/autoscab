@@ -135,8 +135,7 @@ class KingSoopersPostbot(PostBot):
             "app_am18",
             "app_am21",
             "app_legaltowork",
-            "app_bgcheck",
-            "app_workovernight"]:
+            "app_bgcheck"]:
             try:
                 button = getattr(self, anattr)
                 button.click()
